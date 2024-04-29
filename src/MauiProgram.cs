@@ -14,16 +14,7 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
-        var outputTemplate =
-            new ExpressionTemplate(
-                "[{@t:yyyy-MM-dd HH:mm:ss.fff zzz}] [{@l:u3}] {#if SourceContext is not null}[{Substring(SourceContext, LastIndexOf(SourceContext, '.') + 1)}] {#end}{@m:lj}\n{@x}");
-
-        Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Verbose()
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-            .Enrich.FromLogContext()
-            .WriteToDevice(outputTemplate)
-            .CreateLogger();
+        ConfigureSerilog();
         
         var builder = MauiApp.CreateBuilder();
         builder
@@ -60,5 +51,19 @@ public static class MauiProgram
         builder.Logging.AddSerilog(dispose: true);
 
         return builder.Build();
+    }
+
+    private static void ConfigureSerilog()
+    {
+        var outputTemplate =
+            new ExpressionTemplate(
+                "[{@t:yyyy-MM-dd HH:mm:ss.fff zzz}] [{@l:u3}] {#if SourceContext is not null}[{Substring(SourceContext, LastIndexOf(SourceContext, '.') + 1)}] {#end}{@m:lj}\n{@x}");
+
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Verbose()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .Enrich.FromLogContext()
+            .WriteToDevice(outputTemplate)
+            .CreateLogger();
     }
 }
