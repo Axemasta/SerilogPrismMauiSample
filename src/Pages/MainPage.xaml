@@ -3,10 +3,16 @@
 <ContentPage
     Title="Serilog Prism Sample"
     x:Class="SerilogMaui.Pages.MainPage"
+    x:DataType="viewmodels:MainViewModel"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:viewmodels="clr-namespace:SerilogMaui.ViewModels"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
     <ContentPage.Content>
 
-        <Label Text="LOGGING" />
+        <VerticalStackLayout Padding="20" Spacing="10">
+            <Label Text="Press the button to write to logs" />
+
+            <Button Command="{Binding WriteCommand}" Text="Log" />
+        </VerticalStackLayout>
     </ContentPage.Content>
 </ContentPage>

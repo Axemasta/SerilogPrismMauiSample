@@ -1,5 +1,9 @@
 ﻿using System.Diagnostics;
+using System.Text;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Events;
+using Serilog.Templates;
 using SerilogMaui.Extensions;
 using SerilogMaui.Pages;
 using SerilogMaui.ViewModels;
@@ -10,6 +14,17 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
+        var outputTemplate =
+            new ExpressionTemplate(
+                "[{@t:yyyy-MM-dd HH:mm:ss.fff zzz}] [{@l:u3}] {#if SourceContext is not null}[{Substring(SourceContext, LastIndexOf(SourceContext, '.') + 1)}] {#end}{@m:lj}\n{@x}");
+
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Verbose()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .Enrich.FromLogContext()
+            .WriteToDevice(outputTemplate)
+            .CreateLogger();
+        
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
@@ -21,7 +36,6 @@ public static class MauiProgram
                     
                     containerRegistry.RegisterForNavigation<MainPage, MainViewModel>();
                 });
-                
                 
                 prism.CreateWindow(async navigationService =>
                 {
@@ -43,9 +57,7 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-#if DEBUG
-        builder.Logging.AddDebug();
-#endif
+        builder.Logging.AddSerilog(dispose: true);
 
         return builder.Build();
     }
